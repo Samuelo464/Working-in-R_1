@@ -1,0 +1,97 @@
+# Cleaning data 
+
+
+## Step 1: Load packages
+
+Installing the required packages
+
+install.packages("tidyverse")
+install.packages("skimr")
+install.packages("janitor")
+
+
+Once a package is installed, it was loaded by running the `library()` function with the package name inside the parentheses:
+
+
+library(tidyverse)
+library(skimr)
+library(janitor)
+
+## Step 2: Import data
+The data in this project is originally from the article Hotel Booking Demand Datasets (https://www.sciencedirect.com/science/article/pii/S2352340918315191), written by Nuno Antonio, Ana Almeida, and Luis Nunes for Data in Brief, Volume 22, February 2019.
+
+
+The dataset will be downloaded and saved as bookings_df
+
+bookings_df <- read_csv("hotel_bookings.csv")
+
+
+## Step 3: Getting to know the data
+
+Before i started cleaning the data, i took some time to explore it. using the functions below
+
+head(bookings_df)
+
+
+Summarized and previewed the data using the function below 
+
+
+str(bookings_df)
+
+
+glimpse(bookings_df)
+
+
+Used the code below to check the column names of the dataset
+
+
+colnames(bookings_df)
+
+
+Also, used the function below from the  `skimr` package to view important details from the dataset
+
+
+skim_without_charts(bookings_df)
+
+
+## Step 4: Cleaning the data
+
+In this project i am primarily interested in the following variables: hotel, is_canceled, lead_time. So, i Created a new data frame with just those columns, calling it `trimmed_df`.
+
+trimmed_df <- bookings_df %>% 
+  select(hotel, is_canceled, lead_time)
+
+
+Renamed the variable 'hotel' to be named 'hotel_type' to be crystal clear on what the data is about:
+
+
+trimmed_df %>% 
+  select(hotel, is_canceled, lead_time) %>% 
+  rename(hotel_type = hotel)
+  
+
+ Finally, i combined the arrival month and year into one column 
+
+
+bookings_df %>%
+  select(arrival_date_year, arrival_date_month) %>% 
+  unite(arrival_month_year, c("arrival_date_month", "arrival_date_year"), sep = " ")
+  
+  
+
+created a new column that summed up all the adults, children, and babies on a reservation for the total number of people.
+
+bookings_df %>%
+  mutate(guests = adults + children + babies)
+
+head(example_df)
+
+
+Finally, it's time to calculate some summary statistics! I calculated the total number of canceled bookings and the average lead time for booking
+
+
+bookings_df %>%
+  summarize(number_canceled = sum(is_canceled),
+            average_lead_time = mean(lead_time))
+
+head(example_df)
